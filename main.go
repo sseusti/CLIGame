@@ -1,9 +1,33 @@
 package main
 
 /*
-	код писать в этом файле
-	наверняка у вас будут какие-то структуры с методами, глобальные переменные ( тут можно ), функции
+код писать в этом файле
+наверняка у вас будут какие-то структуры с методами, глобальные переменные ( тут можно ), функции
 */
+type Player struct {
+	inventory   []Item
+	currentRoom *Room
+	isBackpack  bool
+}
+
+type Item struct {
+	name string
+}
+
+type Room struct {
+	name  string
+	items []Item
+	exits []Exit
+}
+
+type Door struct {
+	isOpened bool
+}
+
+type Exit struct {
+	destination *Room
+	door        *Door
+}
 
 func main() {
 	/*
