@@ -146,25 +146,33 @@ func (h *Handler) handleApply(item string, applyTo string) string {
 }
 
 func (h *Handler) handleWear(item string) string {
-	if item == "рюкзак" {
-		if h.player.currentRoom.name == "комната" && h.player.isBackpack == false {
+	if item != "рюкзак" {
+		return "нет такого"
+	}
+
+	if h.player.currentRoom.name != "комната" || h.player.isBackpack {
+		return "нет такого"
+	}
+
+	for idx, currentItem := range h.player.currentRoom.items {
+		if currentItem.name == "рюкзак" {
 			h.player.isBackpack = true
-			items := []string{}
-			for _, i := range h.player.currentRoom.items {
-				items = append(items, i.name)
-				idx := slices.Index(items, "рюкзак")
-				if idx != -1 {
-					if h.player.isBackpack {
-						h.player.inventory = append(h.player.inventory, h.player.currentRoom.items[idx])
-						h.player.currentRoom.items = append(h.player.currentRoom.items[:idx], h.player.currentRoom.items[idx+1])
-					}
-				}
-				return "вы надели: рюкзак"
-			}
+
+			h.player.inventory = append(
+				h.player.inventory,
+				currentItem,
+			)
+
+			h.player.currentRoom.items = append(
+				h.player.currentRoom.items[:idx],
+				h.player.currentRoom.items[idx+1:]...,
+			)
+
+			return "вы надели: рюкзак"
 		}
 	}
 
-	return ""
+	return "нет такого"
 }
 
 func (h *Handler) handleTake(item string) string {
