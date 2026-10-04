@@ -89,15 +89,15 @@ type Exit struct {
 }
 
 func initExits(destinations ...*Room) []*Exit {
-    exits := []*Exit{}
+	exits := []*Exit{}
 
-    for _, destination := range destinations {
-        exits = append(exits, &Exit{
-            destination: destination,
-        })
-    }
+	for _, destination := range destinations {
+		exits = append(exits, &Exit{
+			destination: destination,
+		})
+	}
 
-    return exits
+	return exits
 }
 
 type Handler struct {
@@ -248,29 +248,35 @@ func LookKitchen(isBackpack bool) string {
 
 func LookSleepingRoom(items []Item, isBackpack bool, exits []*Exit) string {
 	resp := ""
-	if len(items) == 0 && isBackpack {
-		resp += "пустая комната. "
-		goto EXITS
-	}
 
-	if len(items) != 0 {
-		names := []string{}
-		for _, item := range items[:len(items)-1] {
+	names := []string{}
+
+	for _, item := range items {
+		if item.name != "рюкзак" {
 			names = append(names, item.name)
 		}
-		resp += "на столе: " + strings.Join(names, ", ")
 	}
 
-	if !isBackpack {
-		resp += ", на стуле: рюкзак"
+	if len(names) == 0 && isBackpack {
+		resp = "пустая комната. "
+	} else {
+		if len(names) > 0 {
+			resp += "на столе: " + strings.Join(names, ", ")
+		}
+
+		if !isBackpack {
+			if len(names) > 0 {
+				resp += ", "
+			}
+			resp += "на стуле: рюкзак"
+		}
+
+		resp += ". "
 	}
 
-	resp += ". "
-
-EXITS:
 	resp += "можно пройти -"
 	for _, exit := range exits {
-		resp = resp + " " + exit.destination.name
+		resp += " " + exit.destination.name
 	}
 
 	return resp
