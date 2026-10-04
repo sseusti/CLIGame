@@ -128,6 +128,7 @@ func (h *Handler) handleCommand(command string) string {
 
 func (h *Handler) handleApply(item string, applyTo string) string {
 	items := []string{}
+
 	for _, i := range h.player.inventory {
 		items = append(items, i.name)
 	}
@@ -136,9 +137,15 @@ func (h *Handler) handleApply(item string, applyTo string) string {
 		return "нет предмета в инвентаре - " + item
 	}
 
-	if item == "ключи" {
-		if h.player.currentRoom.name == "коридор" && applyTo == "дверь" {
-			return "дверь открыта"
+	if item == "ключи" &&
+		h.player.currentRoom.name == "коридор" &&
+		applyTo == "дверь" {
+
+		for _, exit := range h.player.currentRoom.exits {
+			if exit.destination.name == "улица" {
+				exit.door.isOpened = true
+				return "дверь открыта"
+			}
 		}
 	}
 
