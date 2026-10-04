@@ -8,10 +8,13 @@ import (
 
 func createAvailableRooms(exits []*Exit, resp string) string {
 	resp += "можно пройти - "
+
 	names := []string{}
+
 	for _, exit := range exits {
-		names = append(names, exit.destination.name)
+		names = append(names, exit.name)
 	}
+
 	resp += strings.Join(names, ", ")
 
 	return resp
@@ -84,20 +87,16 @@ func initDoor() *Door {
 }
 
 type Exit struct {
+	name        string
 	destination *Room
 	door        *Door
 }
 
-func initExits(destinations ...*Room) []*Exit {
-	exits := []*Exit{}
-
-	for _, destination := range destinations {
-		exits = append(exits, &Exit{
-			destination: destination,
-		})
+func initExit(name string, destination *Room) *Exit {
+	return &Exit{
+		name:        name,
+		destination: destination,
 	}
-
-	return exits
 }
 
 type Handler struct {
@@ -311,14 +310,17 @@ func initGame() {
 
 	door := initDoor()
 
-	exits := initExits(kitchen, corridor, sleepingRoom, street)
-	toKitchen, toCorridor, toSleepingRoom, toStreet := exits[0], exits[1], exits[2], exits[3]
+	toCorridor := initExit("коридор", corridor)
+	toKitchen := initExit("кухня", kitchen)
+	toSleepingRoom := initExit("комната", sleepingRoom)
+	toStreet := initExit("улица", street)
+	toHome := initExit("домой", corridor)
 	toStreet.door = door
 
 	kitchen.addExits(toCorridor)
 	corridor.addExits(toKitchen, toSleepingRoom, toStreet)
 	sleepingRoom.addExits(toCorridor)
-	street.addExits(toCorridor)
+	street.addExits(toHome)
 
 	player := initPlayer(kitchen)
 
