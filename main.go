@@ -89,18 +89,15 @@ type Exit struct {
 }
 
 func initExits(destinations ...*Room) []*Exit {
-	exits := []*Exit{}
+    exits := []*Exit{}
 
-	for _, destination := range destinations {
-		exits = append(exits, &Exit{
-			destination: destination,
-			door: &Door{
-				isOpened: true,
-			},
-		})
-	}
+    for _, destination := range destinations {
+        exits = append(exits, &Exit{
+            destination: destination,
+        })
+    }
 
-	return exits
+    return exits
 }
 
 type Handler struct {
@@ -223,12 +220,16 @@ var uniqueStatus = map[string]string{
 func (h *Handler) handleGo(roomName string) string {
 	for _, exit := range h.player.currentRoom.exits {
 		if exit.destination.name == roomName {
-			if exit.door.isOpened == false {
+			if exit.door != nil && !exit.door.isOpened {
 				return "дверь закрыта"
 			}
 
 			h.player.currentRoom = exit.destination
-			return createAvailableRooms(h.player.currentRoom.exits, uniqueStatus[exit.destination.name]+" ")
+
+			return createAvailableRooms(
+				h.player.currentRoom.exits,
+				uniqueStatus[h.player.currentRoom.name]+" ",
+			)
 		}
 	}
 
